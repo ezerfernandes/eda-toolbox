@@ -1,2 +1,4 @@
-# eda-toolbox
-EDA Toolbox - Exploratory Data Analysis made simple
+# EDA Toolbox
+
+Exploratory Data Analysis made simple
+
