@@ -17,13 +17,17 @@ y = dataset.target
 df['y'] = y
 
 # %%
-def show_histogram(df, columns=None):
+def show_histogram(
+    df,
+    columns=None,
+    **kwargs,
+    ):
     '''Show an interactive histogram of a dataframe.'''
     if columns is None:
         columns = list(df.columns)
     
     # Widgets for interacting with the histogram
-    cbx_cols = widgets.Combobox(
+    select_column = widgets.Select(
         options=list(columns),
         value=columns[0],
         description='Columns:',
@@ -38,18 +42,29 @@ def show_histogram(df, columns=None):
         disabled=False,
     )
 
-    ui = widgets.HBox([cbx_cols, slider_bins])
+    widget_dic = {
+        'column': select_column,
+        'bins': slider_bins,
+    }
+    widget_dic = {k: v for k, v in widget_dic.items() if v is not None}
+    widget_list = [w for k, w in widget_dic.items()]
+
+    ui = widgets.HBox(widget_list)
 
     # Create and show the histogram
     def _plot_histogram(column, bins):
-        sns.histplot(data=df, x=column, bins=bins)
+        sns.displot(
+            data=df,
+            x=column,
+            bins=bins,
+            **kwargs,
+            )
         plt.show()
 
     out = widgets.interactive_output(
         _plot_histogram,
-        {
-            'column': cbx_cols,
-            'bins': slider_bins,
-        }
+        widget_dic,
     )
     display(ui, out)
+
+# %%
