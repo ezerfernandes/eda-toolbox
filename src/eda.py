@@ -17,6 +17,25 @@ y = dataset.target
 df['y'] = y
 
 # %%
+def _show_interactive_plot(
+    df,
+    columns,
+    show_function,
+    widget_dic={},
+    ):
+
+    widget_dic = {k: v for k, v in widget_dic.items() if v is not None}
+    widget_list = [w for k, w in widget_dic.items()]
+
+    ui = widgets.HBox(widget_list)
+
+    out = widgets.interactive_output(
+        show_function,
+        widget_dic,
+    )
+    display(ui, out)
+
+
 def show_histogram(
     df,
     columns=None,
@@ -42,15 +61,6 @@ def show_histogram(
         disabled=False,
     )
 
-    widget_dic = {
-        'column': select_column,
-        'bins': slider_bins,
-    }
-    widget_dic = {k: v for k, v in widget_dic.items() if v is not None}
-    widget_list = [w for k, w in widget_dic.items()]
-
-    ui = widgets.HBox(widget_list)
-
     # Create and show the histogram
     def _plot_histogram(column, bins):
         sns.displot(
@@ -60,12 +70,16 @@ def show_histogram(
             **kwargs,
             )
         plt.show()
-
-    out = widgets.interactive_output(
-        _plot_histogram,
-        widget_dic,
+    
+    _show_interactive_plot(
+        df=df,
+        columns=columns,
+        show_function=_plot_histogram,
+        widget_dic={
+            'column': select_column,
+            'bins': slider_bins,
+            },
     )
-    display(ui, out)
 
 
 def show_index_scatterplot(
@@ -83,8 +97,6 @@ def show_index_scatterplot(
         disabled=False,
     )
 
-    ui = widgets.HBox([select_y])
-
     def _plot_index_scatterplot(y):
         sns.scatterplot(
             data=df.reset_index(),
@@ -94,12 +106,7 @@ def show_index_scatterplot(
         )
         plt.show()
     
-    out = widgets.interactive_output(
-        _plot_index_scatterplot,
-        {'y': select_y},
-    )
-    display(ui, out)
-
+    _show_interactive_plot(df, _plot_index_scatterplot, {'y': select_y})
 
 def show_scatterplot(
     df,
@@ -122,8 +129,6 @@ def show_scatterplot(
         disabled=False,
     )
 
-    ui = widgets.HBox([select_x, select_y])
-
     def _plot_scatterplot(x, y):
         sns.scatterplot(
             data=df,
@@ -132,17 +137,12 @@ def show_scatterplot(
             **kwargs,
         )
         plt.show()
-    
-    out = widgets.interactive_output(
+    _show_interactive_plot(
+        df,
+        columns,
         _plot_scatterplot,
-        {
-            'x': select_x,
-            'y': select_y
-        },
-    )
-    display(ui, out)
+        {'x': select_x, 'y': select_y},
+        )
 
-
-    
 
 # %%
