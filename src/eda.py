@@ -145,4 +145,32 @@ def show_scatterplot(
         )
 
 
+def show_feature_relationship(
+    df,
+    features=None,
+    relation_func=lambda df: df.corr(),
+    **kwargs,
+    ):
+    if features is None:
+        features = list(df.columns)
+    if 'cmap' not in kwargs:
+        kwargs['cmap'] = 'RdBu'
+    
+    select_features = widgets.SelectMultiple(
+        options=list(features),
+        value=features[:min(3, len(features))],
+        description='Features:',
+        disabled=False,
+    )
+
+    def _plot(selected_features):
+        plt.figure(figsize=(10,8))
+        df_rel = relation_func(df[list(selected_features)])
+        sns.heatmap(df_rel, **kwargs)
+        plt.show()
+    
+    _show_interactive_plot(df, features, _plot, {'selected_features': select_features})
+
+
+# %%
 # %%
